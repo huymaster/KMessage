@@ -1,0 +1,19 @@
+FROM postgres:18.3-alpine
+
+RUN apk add --no-cache --virtual .build-deps \
+    build-base \
+    git \
+    make \
+    clang19-dev \
+    llvm19-dev \
+    gcc \
+    musl-dev \
+    postgresql-dev
+
+RUN git clone https://github.com/citusdata/pg_cron.git /tmp/pg_cron \
+    && cd /tmp/pg_cron \
+    && make PG_LLVM=0 \
+    && make install PG_LLVM=0 \
+    && cd / \
+    && rm -rf /tmp/pg_cron \
+    && apk del .build-deps

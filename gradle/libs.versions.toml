@@ -1,0 +1,80 @@
+[versions]
+ktor = "3.4.2"
+coroutines = "1.10.2"
+netty = "4.2.10.Final"
+hikari = "7.0.2"
+argon2 = "2.12"
+lettuce = "7.5.0.RELEASE"
+minio = "9.0.0"
+serialization = "1.10.0"
+serialization-plugin = "2.2.21"
+snake-yaml = "2.5"
+postgresql = "42.7.10"
+kotlinx-html = "0.12.0"
+kotlinx-css = "2025.6.4"
+koin = "4.1.1"
+ktorm = "4.1.1"
+logback = "1.5.32"
+bouncy-castle = "1.83"
+
+[libraries]
+ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
+
+serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
+serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+snake-yaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snake-yaml" }
+
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+netty = { module = "io.netty:netty-all", version.ref = "netty" }
+netty-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }
+
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+
+argon2 = { module = "de.mkammerer:argon2-jvm", version.ref = "argon2" }
+
+lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+
+minio = { module = "io.minio:minio", version.ref = "minio" }
+
+ktor-server-core = { module = "io.ktor:ktor-server-core" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets" }
+ktor-server-html-builder = { module = "io.ktor:ktor-server-html-builder" }
+ktor-server-host-common = { module = "io.ktor:ktor-server-host-common" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages" }
+ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging" }
+ktor-server-resources = { module = "io.ktor:ktor-server-resources" }
+ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation" }
+ktor-server-sessions = { module = "io.ktor:ktor-server-sessions" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors" }
+ktor-server-caching-headers = { module = "io.ktor:ktor-server-caching-headers" }
+ktor-server-compression = { module = "io.ktor:ktor-server-compression" }
+ktor-server-conditional-headers = { module = "io.ktor:ktor-server-conditional-headers" }
+ktor-server-http-redirect = { module = "io.ktor:ktor-server-http-redirect" }
+ktor-server-hsts = { module = "io.ktor:ktor-server-hsts" }
+ktor-server-forwarded-header = { module = "io.ktor:ktor-server-forwarded-header" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+
+kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinx-html" }
+kotlin-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-css-jvm", version.ref = "kotlinx-css" }
+
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+
+ktorm-core = { module = "org.ktorm:ktorm-core", version.ref = "ktorm" }
+ktorm-psql = { module = "org.ktorm:ktorm-support-postgresql", version.ref = "ktorm" }
+
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+bouncy-castle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncy-castle" }
+
+[plugins]
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization-plugin" }

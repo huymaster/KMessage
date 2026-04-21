@@ -1,0 +1,45 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.psql
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql
+    command: |
+      postgres 
+      -c shared_preload_libraries=pg_cron
+      -c cron.database_name=test
+    networks:
+      - default
+
+  redis:
+    image: redis:8.6-alpine
+    ports:
+      - "6379:6379"
+    environment:
+      - REDISCLI_AUTH=password
+    command: redis-server --requirepass password
+    networks:
+      - default
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: user
+      MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

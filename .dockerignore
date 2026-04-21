@@ -1,0 +1,27 @@
+# Gradle và Build artifacts
+.gradle
+build/
+**/build/
+bin/
+
+# IDEs (IntelliJ, VS Code)
+.idea/
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# OSes
+.DS_Store
+Thumbs.db
+
+# Docker & Version Control
+.git
+.gitignore
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+log/
+*.log
