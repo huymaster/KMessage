@@ -1,8 +1,9 @@
 # Gradle và Build artifacts
 .gradle
 build/
-**/build/
 bin/
+cookies.json
+
 
 # IDEs (IntelliJ, VS Code)
 .idea/
@@ -24,4 +25,5 @@ Dockerfile
 .dockerignore
 
 log/
-*.log
+*.log!/postgres/
+!/_sessions_/

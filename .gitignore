@@ -1,4 +1,5 @@
 .env
+cookies.json
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -44,4 +45,5 @@ bin/
 .vscode/
 
 ### Mac OS ###
-.DS_Store
+.DS_Store!/postgres/
+!/_sessions_/
