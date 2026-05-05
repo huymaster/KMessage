@@ -24,7 +24,7 @@ services:
       - "6379:6379"
     environment:
       - REDISCLI_AUTH=password
-    command: redis-server --requirepass password
+    command: redis-server --requirepass password --notify-keyspace-events Ex
     networks:
       - default
 

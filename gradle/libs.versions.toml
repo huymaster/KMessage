@@ -1,4 +1,5 @@
 [versions]
+kotlin = "2.3.21"
 ktor = "3.4.2"
 coroutines = "1.10.2"
 netty = "4.2.10.Final"
@@ -15,7 +16,7 @@ kotlinx-css = "2025.6.4"
 koin = "4.1.1"
 ktorm = "4.1.1"
 logback = "1.5.32"
-bouncy-castle = "1.83"
+bouncy-castle = "1.84"
 
 [libraries]
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
@@ -55,6 +56,7 @@ ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors" }
 ktor-server-caching-headers = { module = "io.ktor:ktor-server-caching-headers" }
 ktor-server-compression = { module = "io.ktor:ktor-server-compression" }
+ktor-server-compression-zstd = { module = "io.ktor:ktor-server-compression-zstd" }
 ktor-server-conditional-headers = { module = "io.ktor:ktor-server-conditional-headers" }
 ktor-server-http-redirect = { module = "io.ktor:ktor-server-http-redirect" }
 ktor-server-hsts = { module = "io.ktor:ktor-server-hsts" }

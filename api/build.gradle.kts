@@ -19,6 +19,7 @@ kotlin {
             dependencies {
                 implementation(libs.serialization.core)
                 implementation(libs.serialization.json)
+                implementation(libs.coroutines.core)
             }
         }
 
@@ -34,7 +35,4 @@ kotlin {
         browser()
         binaries.executable()
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
 }

@@ -42,6 +42,7 @@ object DirectMemoryPool {
 
     interface Provider : AutoCloseable {
         val name: String
+        val bufferSize: Int
 
         /**
          * Attempts to acquire a buffer immediately without suspending.
@@ -103,7 +104,7 @@ object DirectMemoryPool {
             }
         }
 
-        private val bufferSize = OS_PAGE_SIZE * pages
+        override val bufferSize = OS_PAGE_SIZE * pages
         private val availableBuffers = Channel<ByteBuffer>(poolSize)
         private val isClosed = AtomicBoolean(false)
         private val allBuffers = Array(poolSize) { ByteBuffer.allocateDirect(bufferSize) }
@@ -145,6 +146,7 @@ object DirectMemoryPool {
         override suspend fun <R> use(block: suspend (ByteBuffer) -> R): R {
             val buffer = availableBuffers.receive()
             return try {
+                buffer.clear()
                 block(buffer)
             } finally {
                 @OptIn(UnsafeDirectMemoryApi::class)

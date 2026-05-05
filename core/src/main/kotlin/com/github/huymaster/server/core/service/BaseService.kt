@@ -21,9 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class BaseService : Service {
     companion object {
-        protected val breaker = CircuitBreaker.invoke {
-
-        }
+        protected val breaker = CircuitBreaker()
     }
 
     protected val logger: Logger = LoggerFactory.getLogger(javaClass)

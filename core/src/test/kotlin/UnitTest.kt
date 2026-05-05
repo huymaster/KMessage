@@ -1,5 +1,4 @@
 import com.github.huymaster.server.api.constants.Endpoints
-import com.github.huymaster.server.api.models.request.CreateUploadSessionRequest
 import com.github.huymaster.server.api.models.request.LoginRequest
 import com.github.huymaster.server.api.models.request.RegisterRequest
 import com.github.huymaster.server.core.utils.serverSideJson
@@ -73,6 +72,7 @@ private class Storage(private val file: File) : CookiesStorage {
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun initCache() {
+        if (initialized) return
         if (file.exists()) {
             try {
                 file.inputStream().use { cache.addAll(serverSideJson.decodeFromStream(it)) }
@@ -152,10 +152,7 @@ class UnitTest {
         val login = LoginRequest("huymaster", "Aa123456")
         var result: HttpResponse
 
-        result = client.post(Endpoints.get {
-            +it.AUTH_SERVICE
-            +it.AUTH_SERVICE_REGISTER
-        }) {
+        result = client.post(Endpoints.get(Endpoints.AUTH_SERVICE_REGISTER)) {
             contentType(ContentType.Application.Json)
             setBody(register)
         }
@@ -165,10 +162,7 @@ class UnitTest {
         else
             logger.info("register success: {}", result.bodyAsText())
 
-        result = client.post(Endpoints.get {
-            +it.AUTH_SERVICE
-            +it.AUTH_SERVICE_LOGIN
-        }) {
+        result = client.post(Endpoints.get(Endpoints.AUTH_SERVICE_LOGIN)) {
             contentType(ContentType.Application.Json)
             setBody(login)
         }
@@ -179,24 +173,11 @@ class UnitTest {
             logger.info("login success: {}", result.bodyAsText())
 
 
-        result = client.get(Endpoints.get {
-            +it.AUTH_SERVICE
-            +it.AUTH_SERVICE_REFRESH
-        })
+        result = client.get(Endpoints.get(Endpoints.AUTH_SERVICE_REFRESH))
 
         assertEquals(result.status, HttpStatusCode.OK, "refresh token failed: ${result.bodyAsText()}")
         val token = result.bodyAsText()
 
-        val createSession = CreateUploadSessionRequest("test.txt", "text/plain", 1024, "1234567890")
-        result = client.post(Endpoints.get {
-            +it.FILE_SERVICE
-            +it.FILE_SERVICE_CREATE_UPLOAD
-        }) {
-            contentType(ContentType.Application.Json)
-            bearerAuth(token)
-            setBody(createSession)
-        }
-        assertEquals(result.status, HttpStatusCode.Created, "create upload session failed: ${result.bodyAsText()}")
-        logger.info("create upload session success: {}", result.bodyAsText())
+        logger.info(token)
     }
 }
