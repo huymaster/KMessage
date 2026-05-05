@@ -6,7 +6,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
-import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
 import io.minio.MinioClient
 import org.koin.dsl.module
 import org.ktorm.database.Database
@@ -75,8 +75,8 @@ object Database {
             RedisClient.create(uri)
         }
 
-        single<StatefulRedisConnection<String, String>> {
-            get<RedisClient>().connect()
+        single<StatefulRedisPubSubConnection<String, String>> {
+            get<RedisClient>().connectPubSub()
         }
     }
 

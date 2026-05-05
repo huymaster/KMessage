@@ -1,7 +1,7 @@
 package com.github.huymaster.server.core.module
 
 import com.github.huymaster.server.api.exceptions.ServiceException
-import com.github.huymaster.server.core.net.*
+import com.github.huymaster.server.core.net.BaseRoute
 import com.github.huymaster.server.core.utils.CircuitBreaker
 import com.github.huymaster.server.core.utils.I18nPlugin
 import com.github.huymaster.server.core.utils.LocaleContext.Companion.text
@@ -10,6 +10,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.compression.*
+import io.ktor.server.plugins.compression.zstd.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.resources.*
@@ -27,12 +28,17 @@ fun Application.configureRouting() {
 
             !isRangeRequest && !isDownload && !isIdentity
         }
-        gzip {
+        zstd {
             priority = 1.0
+            matchContentType(ContentType.Text.Any)
+            zstd(level = 20)
+        }
+        gzip {
+            priority = 0.9
             matchContentType(ContentType.Text.Any)
         }
         deflate {
-            priority = 0.9
+            priority = 0.8
             matchContentType(ContentType.Text.Any)
         }
     }
@@ -103,11 +109,8 @@ fun Application.configureRouting() {
     }
     install(AutoHeadResponse)
     install(Resources)
+
     routing {
-        BaseRoutes.register(this)
-        AuthRoutes.register(this)
-        FileRoutes.register(this)
-        UserRoutes.register(this)
-        KeyRoutes.register(this)
+        BaseRoute.routes.forEach { it.register(this) }
     }
 }

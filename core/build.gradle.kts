@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.ktor.server.cors)
     implementation(libs.ktor.server.caching.headers)
     implementation(libs.ktor.server.compression)
+    implementation(libs.ktor.server.compression.zstd)
     implementation(libs.ktor.server.conditional.headers)
     implementation(libs.ktor.server.http.redirect)
     implementation(libs.ktor.server.hsts)
