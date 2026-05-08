@@ -1,6 +1,7 @@
 .env
+cookies.json
 **/cookies.json
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -47,3 +48,4 @@ bin/
 ### Mac OS ###
 .DS_Store!/postgres/
 !/_sessions_/
+.aider*

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
     alias(libs.plugins.serialization)
 }
 
@@ -11,28 +11,11 @@ repositories {
 }
 
 dependencies {
-}
+    implementation(libs.serialization.core)
+    implementation(libs.serialization.json)
+    implementation(libs.coroutines.core)
 
-kotlin {
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.serialization.core)
-                implementation(libs.serialization.json)
-                implementation(libs.coroutines.core)
-            }
-        }
+    implementation(libs.bouncy.castle)
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-    }
-
-    jvm()
-    js(IR) {
-        browser()
-        binaries.executable()
-    }
+    testImplementation(kotlin("test"))
 }
