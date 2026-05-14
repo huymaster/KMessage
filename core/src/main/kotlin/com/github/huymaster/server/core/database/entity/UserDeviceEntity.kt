@@ -10,8 +10,9 @@ interface UserDeviceEntity : Entity<UserDeviceEntity> {
     var deviceId: UUID
     var userId: UUID
     var deviceName: String?
-    var identityKey: ByteArray
     var createdAt: Instant
     var lastSeen: Instant
     var registrationId: Int
+    var mlkemPublicKey: ByteArray
+    var edPublicKey: ByteArray
 }

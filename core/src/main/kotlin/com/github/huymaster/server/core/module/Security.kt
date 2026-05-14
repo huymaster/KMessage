@@ -14,6 +14,7 @@ import io.ktor.server.plugins.forwardedheaders.*
 import io.ktor.server.plugins.hsts.*
 import io.ktor.server.plugins.httpsredirect.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -53,6 +54,14 @@ fun Application.configureSecurity() {
     install(ForwardedHeaders)
     install(XForwardedHeaders)
     install(IgnoreTrailingSlash)
+    install(createApplicationPlugin("CSP") {
+        onCallRespond {
+            it.response.header(
+                "Content-Security-Policy",
+                "default-src 'self' 'wasm-unsafe-eval'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline';"
+            )
+        }
+    })
     if (!EnvironmentVariables.DEBUG.VALUE) {
         install(HSTS)
         install(HttpsRedirect) {

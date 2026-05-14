@@ -14,9 +14,6 @@ object UserDeviceTable : BaseTable<UserDeviceEntity>(DatabaseConstants.USER_DEVI
     val deviceName = varchar(DatabaseConstants.DEVICE_NAME_COLUMN)
         .bindTo { it.deviceName }
 
-    val identityKey = bytes(DatabaseConstants.IDENTITY_KEY_COLUMN)
-        .bindTo { it.identityKey }
-
     val createdAt = timestamp(DatabaseConstants.DEVICE_CREATED_AT_COLUMN)
         .bindTo { it.createdAt }
 
@@ -25,4 +22,10 @@ object UserDeviceTable : BaseTable<UserDeviceEntity>(DatabaseConstants.USER_DEVI
 
     val registrationId = int(DatabaseConstants.REGISTRATION_ID_COLUMN)
         .bindTo { it.registrationId }
+
+    val mlkemPublicKey = bytes(DatabaseConstants.MLKEM_PUBLIC_KEY_COLUMN)
+        .bindTo { it.mlkemPublicKey }
+
+    val edPublicKey = bytes(DatabaseConstants.ED_PUBLIC_KEY_COLUMN)
+        .bindTo { it.edPublicKey }
 }

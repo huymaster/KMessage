@@ -6,9 +6,11 @@ import com.github.huymaster.server.core.utils.CircuitBreaker
 import com.github.huymaster.server.core.utils.I18nPlugin
 import com.github.huymaster.server.core.utils.LocaleContext.Companion.text
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.plugins.autohead.*
+import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.compression.zstd.*
 import io.ktor.server.plugins.statuspages.*
@@ -40,6 +42,17 @@ fun Application.configureRouting() {
         deflate {
             priority = 0.8
             matchContentType(ContentType.Text.Any)
+        }
+    }
+    install(CachingHeaders) {
+        options { call, outgoingContent ->
+            when (outgoingContent.contentType?.withoutParameters()) {
+                ContentType.Text.Html -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 60 * 60))
+                ContentType.Text.JavaScript -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+                ContentType.Text.CSS -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+                ContentType.Application.Wasm -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+                else -> null
+            }
         }
     }
     install(I18nPlugin)

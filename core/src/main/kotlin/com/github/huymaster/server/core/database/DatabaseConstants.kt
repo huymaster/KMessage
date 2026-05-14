@@ -43,8 +43,9 @@ object DatabaseConstants {
     const val USER_DEVICE_TABLE = "user_device"
     const val DEVICE_ID_COLUMN = "device_id"
     const val DEVICE_NAME_COLUMN = "device_name"
-    const val IDENTITY_KEY_COLUMN = "identity_key"
     const val DEVICE_CREATED_AT_COLUMN = "created_at"
     const val LAST_SEEN_COLUMN = "last_seen"
     const val REGISTRATION_ID_COLUMN = "registration_id"
+    const val MLKEM_PUBLIC_KEY_COLUMN = "mlkem_public_key"
+    const val ED_PUBLIC_KEY_COLUMN = "ed_public_key"
 }

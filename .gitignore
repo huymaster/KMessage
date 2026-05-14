@@ -47,5 +47,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store!/postgres/
+
 !/_sessions_/
 .aider*

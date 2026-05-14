@@ -1,7 +1,11 @@
 import com.github.huymaster.server.api.constants.Endpoints
+import com.github.huymaster.server.api.models.request.DeviceRegisterRequest
 import com.github.huymaster.server.api.models.request.LoginRequest
 import com.github.huymaster.server.api.models.request.RegisterRequest
-import com.github.huymaster.server.core.utils.serverSideJson
+import com.github.huymaster.server.api.security.ED25519KeyPairGenerator
+import com.github.huymaster.server.api.security.MLKEMKeyPairGenerator
+import com.github.huymaster.server.api.utils.DefaultCbor
+import com.github.huymaster.server.api.utils.DefaultJson
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -10,6 +14,7 @@ import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.cbor.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -75,7 +80,7 @@ private class Storage(private val file: File) : CookiesStorage {
         if (initialized) return
         if (file.exists()) {
             try {
-                file.inputStream().use { cache.addAll(serverSideJson.decodeFromStream(it)) }
+                file.inputStream().use { cache.addAll(DefaultJson.decodeFromStream(it)) }
                 cache.removeAll { it.value.isBlank() }
                 saveToFile()
                 initialized = true
@@ -88,7 +93,7 @@ private class Storage(private val file: File) : CookiesStorage {
     @OptIn(ExperimentalSerializationApi::class)
     private fun saveToFile() {
         try {
-            file.outputStream().use { serverSideJson.encodeToStream(cache, it) }
+            file.outputStream().use { DefaultJson.encodeToStream(cache, it) }
         } catch (e: Exception) {
             logger.error("Failed to save cookies to file", e)
         }
@@ -131,10 +136,12 @@ class UnitTest {
         val client = HttpClient(CIO) {
             defaultRequest {
                 url("http://localhost:8080")
-                header(HttpHeaders.AcceptLanguage, "vi;q=0.9,en;q=0.8")
+//                header(HttpHeaders.AcceptLanguage, "vi;q=0.9,en;q=0.8")
+                header(HttpHeaders.Accept, "application/cbor, application/json;q=0.8")
             }
             install(ContentNegotiation) {
-                json(serverSideJson)
+                cbor(DefaultCbor)
+                json(DefaultJson)
             }
             install(HttpCookies) {
                 storage = Storage(File("cookies.json"))
@@ -153,7 +160,7 @@ class UnitTest {
         var result: HttpResponse
 
         result = client.post(Endpoints.get(Endpoints.AUTH_SERVICE_REGISTER)) {
-            contentType(ContentType.Application.Json)
+            contentType(ContentType.Application.Cbor)
             setBody(register)
         }
 
@@ -163,7 +170,7 @@ class UnitTest {
             logger.info("register success: {}", result.bodyAsText())
 
         result = client.post(Endpoints.get(Endpoints.AUTH_SERVICE_LOGIN)) {
-            contentType(ContentType.Application.Json)
+            contentType(ContentType.Application.Cbor)
             setBody(login)
         }
 
@@ -179,5 +186,17 @@ class UnitTest {
         val token = result.bodyAsText()
 
         logger.info(token)
+
+        val request = DeviceRegisterRequest(
+            MLKEMKeyPairGenerator.getInstance().generate().first.encoded,
+            ED25519KeyPairGenerator.getInstance().generate().first.encoded
+        )
+        result = client.post(Endpoints.get(Endpoints.KEY_SERVICE_REGISTER)) {
+            contentType(ContentType.Application.Cbor)
+            bearerAuth(token)
+            setBody(request)
+        }
+        assertEquals(result.status, HttpStatusCode.OK, "registration failed: ${result.bodyAsText()}")
+        logger.info("registration successful: {}", result.bodyAsBytes().toList())
     }
 }

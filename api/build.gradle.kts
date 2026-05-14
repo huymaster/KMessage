@@ -13,6 +13,7 @@ repositories {
 dependencies {
     implementation(libs.serialization.core)
     implementation(libs.serialization.json)
+    implementation(libs.serialization.cbor)
     implementation(libs.coroutines.core)
 
     implementation(libs.bouncy.castle)

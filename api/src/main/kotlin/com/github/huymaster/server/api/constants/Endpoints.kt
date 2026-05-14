@@ -2,6 +2,7 @@ package com.github.huymaster.server.api.constants
 
 object Endpoints {
     const val BASE_SERVICE_HEALTH = "health"
+    const val BASE_SERVICE_INFO = "info"
 
     const val AUTH_SERVICE = "auth"
     const val AUTH_SERVICE_REGISTER = "${AUTH_SERVICE}/register"
@@ -22,6 +23,8 @@ object Endpoints {
     const val USER_SERVICE_INFO = "${USER_SERVICE}/{userId}"
 
     const val KEY_SERVICE = "key"
+    const val KEY_SERVICE_REGISTER = "${KEY_SERVICE}/register"
+    const val KEY_SERVICE_GET_BUNDLE = "${KEY_SERVICE}/bundle"
 
     class EndpointConfiguration(var baseUrl: String = "http://localhost:8080") {
         var path: String = ""

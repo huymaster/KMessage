@@ -24,6 +24,7 @@ abstract class BaseService : Service {
         protected val breaker = CircuitBreaker()
     }
 
+    protected val breaker = Companion.breaker
     protected val logger: Logger = LoggerFactory.getLogger(javaClass)
     protected val database: Database by inject()
     protected val redis: RedisService by inject()

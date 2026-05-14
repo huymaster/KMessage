@@ -27,6 +27,7 @@ dependencies {
 
     implementation(libs.serialization.core)
     implementation(libs.serialization.json)
+    implementation(libs.serialization.cbor)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.reactive)
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.ktor.server.auto.head.response)
     implementation(libs.ktor.server.resources)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.serialization.kotlinx.cbor)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.server.auth)
