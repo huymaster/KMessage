@@ -1,39 +1,47 @@
 package com.github.huymaster.server.core.utils
 
-import de.mkammerer.argon2.Argon2
-import de.mkammerer.argon2.Argon2Factory
+import com.github.huymaster.server.api.security.Argon2KeyDerivation
+import com.github.huymaster.server.api.utils.getRandomBytes
+import com.github.huymaster.server.api.utils.mergeSalt
+import com.github.huymaster.server.api.utils.splitSalt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.Contract
-import java.util.*
+import java.security.MessageDigest
 
 object PasswordManager {
-    private const val ITERATION = 3
-    private const val MEMORY = 32768
-    private const val PARALLELISM = 4
-
+    private val keyDeriver = Argon2KeyDerivation.DEFAULT
     private val charset = Charsets.UTF_8
-    private val encoder: Base64.Encoder = Base64.getEncoder()
-    private val decoder: Base64.Decoder = Base64.getDecoder()
-    private val argon2: Argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id)
 
-    @Contract(pure = true)
+    private const val SALT_LENGTH = 16
+
     fun hash(password: String): ByteArray {
-        val hash = argon2.hash(ITERATION, MEMORY, PARALLELISM, password.toCharArray(), charset)
-        return encoder.encode(hash.toByteArray(charset))
+        val passwordBytes = password.toByteArray(charset)
+        val salt = getRandomBytes(SALT_LENGTH)
+
+        try {
+            val hash = keyDeriver.deriveKey(passwordBytes, salt)
+            return mergeSalt(salt, hash)
+        } finally {
+            passwordBytes.fill(0)
+        }
     }
 
-    @Contract(pure = true)
-    fun verify(password: String, hash: ByteArray): Boolean {
-        val hashString = decoder.decode(hash).toString(charset)
-        return argon2.verify(hashString, password.toCharArray(), charset)
+    fun verify(password: String, combined: ByteArray): Boolean {
+        if (combined.size <= SALT_LENGTH) return false
+
+        val (salt, targetHash) = splitSalt(combined)
+        val passwordBytes = password.toByteArray(charset)
+        try {
+            val computedHash = keyDeriver.deriveKey(passwordBytes, salt)
+            return MessageDigest.isEqual(computedHash, targetHash)
+        } finally {
+            passwordBytes.fill(0)
+        }
     }
 
-    @Contract(pure = true)
     suspend fun hashSuspend(password: String): ByteArray =
         withContext(Dispatchers.IO) { hash(password) }
 
-    @Contract(pure = true)
     suspend fun verifySuspend(password: String, hash: ByteArray): Boolean =
         withContext(Dispatchers.IO) { verify(password, hash) }
 }

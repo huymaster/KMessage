@@ -1,33 +1,24 @@
 package com.github.huymaster.server.api.security
 
+import com.github.huymaster.server.api.utils.getSecureRandom
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.*
-import java.security.SecureRandom
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class AbstractKeyPairGenerator<P, S> : KeyPairGenerator<P, S> {
-    companion object {
-        private val randoms = ConcurrentHashMap<Boolean, SecureRandom>()
-    }
-
-    protected fun getSecureRandom(strong: Boolean): SecureRandom =
-        randoms.getOrPut(strong) { if (strong) SecureRandom.getInstanceStrong() else SecureRandom() }
-}
-
-class MLKEMKeyPairGenerator private constructor(
+class MLKYBERKeyPairGenerator private constructor(
     private val params: Parameters
-) : AbstractKeyPairGenerator<MLKEMPublicKeyParameters, MLKEMPrivateKeyParameters>() {
+) : KeyPairGenerator<MLKEMPublicKeyParameters, MLKEMPrivateKeyParameters> {
     private data class Parameters(val params: MLKEMParameters, val strong: Boolean)
 
     companion object {
-        private val instances = ConcurrentHashMap<Parameters, MLKEMKeyPairGenerator>()
+        private val instances = ConcurrentHashMap<Parameters, MLKYBERKeyPairGenerator>()
 
         fun getInstance(
             params: MLKEMParameters = MLKEMParameters.ml_kem_768,
             strong: Boolean = false
-        ): MLKEMKeyPairGenerator {
+        ): MLKYBERKeyPairGenerator {
             val params = Parameters(params, strong)
-            return instances.getOrPut(params) { MLKEMKeyPairGenerator(params) }
+            return instances.getOrPut(params) { MLKYBERKeyPairGenerator(params) }
         }
     }
 
@@ -48,7 +39,7 @@ class MLKEMKeyPairGenerator private constructor(
 
 class ED25519KeyPairGenerator private constructor(
     private val strong: Boolean
-) : AbstractKeyPairGenerator<Ed25519PublicKeyParameters, Ed25519PrivateKeyParameters>() {
+) : KeyPairGenerator<Ed25519PublicKeyParameters, Ed25519PrivateKeyParameters> {
     companion object {
         private val instances = ConcurrentHashMap<Boolean, ED25519KeyPairGenerator>()
 
