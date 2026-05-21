@@ -47,5 +47,6 @@ object DatabaseConstants {
     const val LAST_SEEN_COLUMN = "last_seen"
     const val REGISTRATION_ID_COLUMN = "registration_id"
     const val MLKEM_PUBLIC_KEY_COLUMN = "mlkem_public_key"
+    const val MLDSA_PUBLIC_KEY_COLUMN = "mldsa_public_key"
     const val ED_PUBLIC_KEY_COLUMN = "ed_public_key"
 }

@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DeviceRegisterRequest(
     @Contextual val mlkemPublicKey: ByteArray,
+    @Contextual val mldsaPublicKey: ByteArray,
     @Contextual val edPublicKey: ByteArray,
+    @Contextual val signature: ByteArray,
     val deviceName: String? = null
 ) {
     override fun equals(other: Any?): Boolean {
@@ -14,7 +16,9 @@ data class DeviceRegisterRequest(
         if (other !is DeviceRegisterRequest) return false
 
         if (!mlkemPublicKey.contentEquals(other.mlkemPublicKey)) return false
+        if (!mldsaPublicKey.contentEquals(other.mldsaPublicKey)) return false
         if (!edPublicKey.contentEquals(other.edPublicKey)) return false
+        if (!signature.contentEquals(other.signature)) return false
         if (deviceName != other.deviceName) return false
 
         return true
@@ -22,7 +26,9 @@ data class DeviceRegisterRequest(
 
     override fun hashCode(): Int {
         var result = mlkemPublicKey.contentHashCode()
+        result = 31 * result + mldsaPublicKey.contentHashCode()
         result = 31 * result + edPublicKey.contentHashCode()
+        result = 31 * result + signature.contentHashCode()
         result = 31 * result + (deviceName?.hashCode() ?: 0)
         return result
     }

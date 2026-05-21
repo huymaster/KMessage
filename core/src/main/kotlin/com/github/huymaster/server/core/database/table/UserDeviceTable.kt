@@ -26,6 +26,9 @@ object UserDeviceTable : BaseTable<UserDeviceEntity>(DatabaseConstants.USER_DEVI
     val mlkemPublicKey = bytes(DatabaseConstants.MLKEM_PUBLIC_KEY_COLUMN)
         .bindTo { it.mlkemPublicKey }
 
+    val mldsaPublicKey = bytes(DatabaseConstants.MLDSA_PUBLIC_KEY_COLUMN)
+        .bindTo { it.mldsaPublicKey }
+
     val edPublicKey = bytes(DatabaseConstants.ED_PUBLIC_KEY_COLUMN)
         .bindTo { it.edPublicKey }
 }

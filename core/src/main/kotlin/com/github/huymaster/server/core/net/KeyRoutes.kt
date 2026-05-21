@@ -28,7 +28,9 @@ object KeyRoutes : BaseRoute() {
                 val registrationId = keyService.registerDevice(
                     userId,
                     request.mlkemPublicKey,
+                    request.mldsaPublicKey,
                     request.edPublicKey,
+                    request.signature,
                     request.deviceName
                 ).getOrThrow()
                 call.respond(registrationId as Number)

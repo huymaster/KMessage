@@ -7,13 +7,13 @@ import org.bouncycastle.crypto.params.MLKEMPrivateKeyParameters
 import org.bouncycastle.crypto.params.MLKEMPublicKeyParameters
 import java.util.concurrent.ConcurrentHashMap
 
-class MLKYBERKeyEncapsulation private constructor(
+class MLKEMKeyEncapsulation private constructor(
     strong: Boolean
 ) : KeyEncapsulation<MLKEMPublicKeyParameters, MLKEMPrivateKeyParameters, ByteArray> {
     companion object {
-        private val instances = ConcurrentHashMap<Boolean, MLKYBERKeyEncapsulation>()
-        fun getInstance(strong: Boolean = false): MLKYBERKeyEncapsulation =
-            instances.getOrPut(strong) { MLKYBERKeyEncapsulation(strong) }
+        private val instances = ConcurrentHashMap<Boolean, MLKEMKeyEncapsulation>()
+        fun getInstance(strong: Boolean = false): MLKEMKeyEncapsulation =
+            instances.getOrPut(strong) { MLKEMKeyEncapsulation(strong) }
     }
 
     private class Encapsulator(strong: Boolean) :

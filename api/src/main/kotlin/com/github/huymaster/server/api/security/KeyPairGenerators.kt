@@ -5,20 +5,20 @@ import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.*
 import java.util.concurrent.ConcurrentHashMap
 
-class MLKYBERKeyPairGenerator private constructor(
+class MLKEMKeyPairGenerator private constructor(
     private val params: Parameters
 ) : KeyPairGenerator<MLKEMPublicKeyParameters, MLKEMPrivateKeyParameters> {
     private data class Parameters(val params: MLKEMParameters, val strong: Boolean)
 
     companion object {
-        private val instances = ConcurrentHashMap<Parameters, MLKYBERKeyPairGenerator>()
+        private val instances = ConcurrentHashMap<Parameters, MLKEMKeyPairGenerator>()
 
         fun getInstance(
             params: MLKEMParameters = MLKEMParameters.ml_kem_768,
             strong: Boolean = false
-        ): MLKYBERKeyPairGenerator {
+        ): MLKEMKeyPairGenerator {
             val params = Parameters(params, strong)
-            return instances.getOrPut(params) { MLKYBERKeyPairGenerator(params) }
+            return instances.getOrPut(params) { MLKEMKeyPairGenerator(params) }
         }
     }
 
@@ -33,7 +33,7 @@ class MLKYBERKeyPairGenerator private constructor(
         val private = pair.private as? MLKEMPrivateKeyParameters
             ?: throw IllegalStateException("Failed to generate ML-KEM private key")
 
-        return Pair(public, private)
+        return public to private
     }
 }
 
@@ -58,6 +58,39 @@ class ED25519KeyPairGenerator private constructor(
         val private = pair.private as? Ed25519PrivateKeyParameters
             ?: throw IllegalStateException("Failed to generate ED25519 private key")
 
-        return Pair(public, private)
+        return public to private
+    }
+}
+
+class MLDSAKeyPairGenerator private constructor(
+    private val params: Parameters
+) : KeyPairGenerator<MLDSAPublicKeyParameters, MLDSAPublicKeyParameters> {
+    private data class Parameters(val params: MLDSAParameters, val strong: Boolean)
+
+    companion object {
+        private val instances =
+            ConcurrentHashMap<Parameters, MLDSAKeyPairGenerator>()
+
+        fun getInstance(
+            params: MLDSAParameters = MLDSAParameters.ml_dsa_65_with_sha512,
+            strong: Boolean = false
+        ): MLDSAKeyPairGenerator {
+            val params = Parameters(params, strong)
+            return instances.getOrPut(params) { MLDSAKeyPairGenerator(params) }
+        }
+    }
+
+    override fun generate(): Pair<MLDSAPublicKeyParameters, MLDSAPublicKeyParameters> {
+        val gen = org.bouncycastle.crypto.generators.MLDSAKeyPairGenerator()
+        gen.init(MLDSAKeyGenerationParameters(getSecureRandom(params.strong), params.params))
+        val pair = gen.generateKeyPair()
+
+        val public = pair.public as? MLDSAPublicKeyParameters
+            ?: throw IllegalStateException("Failed to generate MLDSA public key")
+
+        val private = pair.private as? MLDSAPublicKeyParameters
+            ?: throw IllegalStateException("Failed to generate MLDSA public key")
+
+        return public to private
     }
 }

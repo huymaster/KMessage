@@ -34,6 +34,8 @@ dependencies {
 
     implementation(libs.postgresql)
 
+    implementation(libs.bouncy.castle)
+
     implementation(libs.netty)
     implementation(libs.netty.epoll)
 
@@ -83,7 +85,6 @@ dependencies {
     implementation(libs.logback.classic)
 
     testImplementation(kotlin("test"))
-    testImplementation(libs.bouncy.castle)
     testImplementation("io.ktor:ktor-client-core")
     testImplementation("io.ktor:ktor-client-cio")
     testImplementation("io.ktor:ktor-client-content-negotiation")

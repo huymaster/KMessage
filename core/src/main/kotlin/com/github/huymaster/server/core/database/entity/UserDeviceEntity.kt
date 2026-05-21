@@ -14,5 +14,6 @@ interface UserDeviceEntity : Entity<UserDeviceEntity> {
     var lastSeen: Instant
     var registrationId: Int
     var mlkemPublicKey: ByteArray
+    var mldsaPublicKey: ByteArray
     var edPublicKey: ByteArray
 }

@@ -1,21 +1,18 @@
 package com.github.huymaster.server.core.service
 
 import com.github.huymaster.server.api.models.common.KeyBundle
+import com.github.huymaster.server.api.security.MLDSADigitalSignature
 import com.github.huymaster.server.core.database.table.UserDeviceTable
 import com.github.huymaster.server.core.database.table.UserTable
 import com.github.huymaster.server.core.utils.UUIDv7
 import com.github.huymaster.server.core.utils.serviceException
 import io.ktor.http.*
-import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMParameters
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMPublicKeyParameters
+import org.bouncycastle.crypto.params.*
 import org.ktorm.dsl.eq
 import java.security.SecureRandom
 import java.util.*
 
 class KeyService : BaseService() {
-    companion object {
-    }
 
     private val users by injectRepository(UserTable)
     private val devices by injectRepository(UserDeviceTable)
@@ -23,19 +20,29 @@ class KeyService : BaseService() {
     suspend fun registerDevice(
         userId: UUID,
         mlkemPublicKey: ByteArray,
+        mldsaPublicKey: ByteArray,
         edPublicKey: ByteArray,
+        signature: ByteArray,
         deviceName: String? = null
     ) = transactionWithRetryBreaker {
         if (!users.exists { it.userId eq userId })
             serviceException(HttpStatusCode.BadRequest, "key.user_not_exists")
 
-        val (isValidMlkem, isValidEd) = verifyKeys(mlkemPublicKey, edPublicKey)
+        val (isValidMlkem, isValidMldsa, isValidEd) =
+            verifyKeys(mlkemPublicKey, mldsaPublicKey, edPublicKey)
 
         if (!isValidMlkem)
             serviceException(HttpStatusCode.BadRequest, "key.mlkem_invalid")
 
+        if (!isValidMldsa)
+            serviceException(HttpStatusCode.BadRequest, "key.mldsa_invalid")
+
         if (!isValidEd)
             serviceException(HttpStatusCode.BadRequest, "key.ed_invalid")
+
+        val isValidSignature = verifySignature(mlkemPublicKey, mldsaPublicKey, edPublicKey, signature)
+        if (!isValidSignature)
+            serviceException(HttpStatusCode.BadRequest, "key.signature_invalid")
 
         val deviceId = UUIDv7.randomUUID().toUUID()
         val registrationId = SecureRandom().nextInt()
@@ -44,6 +51,7 @@ class KeyService : BaseService() {
             set(it.deviceId, deviceId)
             set(it.deviceName, deviceName)
             set(it.mlkemPublicKey, mlkemPublicKey)
+            set(it.mldsaPublicKey, mldsaPublicKey)
             set(it.edPublicKey, edPublicKey)
             set(it.registrationId, registrationId)
         }
@@ -65,10 +73,16 @@ class KeyService : BaseService() {
 
     private fun verifyKeys(
         mlkemPublicKey: ByteArray,
+        mldsaPublicKey: ByteArray,
         edPublicKey: ByteArray
-    ): Pair<Boolean, Boolean> {
+    ): Triple<Boolean, Boolean, Boolean> {
         val isValidMlkem = runCatching {
             MLKEMPublicKeyParameters(MLKEMParameters.ml_kem_768, mlkemPublicKey)
+            true
+        }.getOrDefault(false)
+
+        val isValidMldsa = runCatching {
+            MLDSAPublicKeyParameters(MLDSAParameters.ml_dsa_65_with_sha512, mldsaPublicKey)
             true
         }.getOrDefault(false)
 
@@ -77,6 +91,25 @@ class KeyService : BaseService() {
             true
         }.getOrDefault(false)
 
-        return Pair(isValidMlkem, isValidEd)
+        return Triple(isValidMlkem, isValidMldsa, isValidEd)
+    }
+
+    private fun verifySignature(
+        mlkemPublicKey: ByteArray,
+        mldsaPublicKey: ByteArray,
+        edPublicKey: ByteArray,
+        signature: ByteArray
+    ): Boolean {
+        val mldsa = MLDSAPublicKeyParameters(MLDSAParameters.ml_dsa_65_with_sha512, mldsaPublicKey)
+        val mkSize = mlkemPublicKey.size
+        val mdSize = mldsaPublicKey.size
+        val edSize = edPublicKey.size
+
+        val array = ByteArray(mkSize + mdSize + edSize)
+        System.arraycopy(mlkemPublicKey, 0, array, 0, mkSize)
+        System.arraycopy(mldsaPublicKey, 0, array, mkSize, mdSize)
+        System.arraycopy(edPublicKey, 0, array, mkSize + mdSize, edSize)
+
+        return MLDSADigitalSignature.verify(mldsa, array, signature)
     }
 }
