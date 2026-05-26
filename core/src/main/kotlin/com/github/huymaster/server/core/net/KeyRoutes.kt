@@ -2,6 +2,7 @@ package com.github.huymaster.server.core.net
 
 import com.github.huymaster.server.api.constants.Endpoints
 import com.github.huymaster.server.api.models.request.DeviceRegisterRequest
+import com.github.huymaster.server.api.models.respond.DeviceRegisterResponse
 import com.github.huymaster.server.core.module.APP_DOMAIN
 import com.github.huymaster.server.core.service.KeyService
 import com.github.huymaster.server.core.utils.getUserIdAsUUID
@@ -33,7 +34,7 @@ object KeyRoutes : BaseRoute() {
                     request.signature,
                     request.deviceName
                 ).getOrThrow()
-                call.respond(registrationId as Number)
+                call.respond(DeviceRegisterResponse(registrationId))
             }
         }
         get(Endpoints.KEY_SERVICE_GET_BUNDLE) {

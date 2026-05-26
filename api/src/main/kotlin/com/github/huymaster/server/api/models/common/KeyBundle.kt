@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class KeyBundle(
     val mlkemKeys: List<@Contextual ByteArray>,
+    val mldsaKeys: List<@Contextual ByteArray>,
     val edKeys: List<@Contextual ByteArray>
 )

@@ -64,11 +64,16 @@ class KeyService : BaseService() {
 
         val devices = devices.find { it.userId eq user.userId }
         val keys = devices.map { device ->
-            device.mlkemPublicKey to device.edPublicKey
+            Triple(
+                device.mlkemPublicKey,
+                device.mldsaPublicKey,
+                device.edPublicKey
+            )
         }
         val mlkemKeys = keys.map { it.first }
-        val edKeys = keys.map { it.second }
-        KeyBundle(mlkemKeys, edKeys)
+        val mldsaKeys = keys.map { it.second }
+        val edKeys = keys.map { it.third }
+        KeyBundle(mlkemKeys, mldsaKeys, edKeys)
     }
 
     private fun verifyKeys(
@@ -100,7 +105,7 @@ class KeyService : BaseService() {
         edPublicKey: ByteArray,
         signature: ByteArray
     ): Boolean {
-        val mldsa = MLDSAPublicKeyParameters(MLDSAParameters.ml_dsa_65_with_sha512, mldsaPublicKey)
+        val mldsa = MLDSAPublicKeyParameters(MLDSAParameters.ml_dsa_65, mldsaPublicKey)
         val mkSize = mlkemPublicKey.size
         val mdSize = mldsaPublicKey.size
         val edSize = edPublicKey.size

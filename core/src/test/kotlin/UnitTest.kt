@@ -2,11 +2,16 @@ import com.github.huymaster.server.api.constants.Endpoints
 import com.github.huymaster.server.api.models.request.DeviceRegisterRequest
 import com.github.huymaster.server.api.models.request.LoginRequest
 import com.github.huymaster.server.api.models.request.RegisterRequest
+import com.github.huymaster.server.api.models.respond.DeviceRegisterResponse
 import com.github.huymaster.server.api.security.ED25519KeyPairGenerator
+import com.github.huymaster.server.api.security.MLDSADigitalSignature
+import com.github.huymaster.server.api.security.MLDSAKeyPairGenerator
 import com.github.huymaster.server.api.security.MLKEMKeyPairGenerator
 import com.github.huymaster.server.api.utils.DefaultCbor
 import com.github.huymaster.server.api.utils.DefaultJson
+import com.github.huymaster.server.api.utils.mergeByteArrays
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -133,11 +138,13 @@ class UnitTest {
             logger.info("initialized")
         }
 
+        @OptIn(ExperimentalSerializationApi::class)
         val client = HttpClient(CIO) {
             defaultRequest {
                 url("http://localhost:8080")
-//                header(HttpHeaders.AcceptLanguage, "vi;q=0.9,en;q=0.8")
+                header(HttpHeaders.AcceptLanguage, "vi;q=0.9,en;q=0.8")
                 header(HttpHeaders.Accept, "application/cbor, application/json;q=0.8")
+                accept(ContentType.Application.Cbor)
             }
             install(ContentNegotiation) {
                 cbor(DefaultCbor)
@@ -187,9 +194,17 @@ class UnitTest {
 
         logger.info(token)
 
+        val mlkem = MLKEMKeyPairGenerator.getInstance().generate()
+        val mldsa = MLDSAKeyPairGenerator.getInstance().generate()
+        val ed25519 = ED25519KeyPairGenerator.getInstance().generate()
+        val merge = mergeByteArrays(mlkem.first.encoded, mldsa.first.encoded, ed25519.first.encoded)
+        val signature = MLDSADigitalSignature.sign(mldsa.second, merge)
+
         val request = DeviceRegisterRequest(
-            MLKEMKeyPairGenerator.getInstance().generate().first.encoded,
-            ED25519KeyPairGenerator.getInstance().generate().first.encoded
+            mlkem.first.encoded,
+            mldsa.first.encoded,
+            ed25519.first.encoded,
+            signature
         )
         result = client.post(Endpoints.get(Endpoints.KEY_SERVICE_REGISTER)) {
             contentType(ContentType.Application.Cbor)
@@ -197,6 +212,6 @@ class UnitTest {
             setBody(request)
         }
         assertEquals(result.status, HttpStatusCode.OK, "registration failed: ${result.bodyAsText()}")
-        logger.info("registration successful: {}", result.bodyAsBytes().toList())
+        logger.info("registration successful: {}", result.body<DeviceRegisterResponse>())
     }
 }

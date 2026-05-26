@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.3.21" apply false
     kotlin("multiplatform") version "2.3.10" apply false
+    alias(libs.plugins.android.application) apply false
 }
 
 group = "com.github.huymaster"
