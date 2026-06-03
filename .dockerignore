@@ -65,3 +65,6 @@ out/
 .DS_Store!/postgres/
 
 .aider*
+
+### Android ###
+android

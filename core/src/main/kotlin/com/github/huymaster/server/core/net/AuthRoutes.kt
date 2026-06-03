@@ -1,14 +1,18 @@
 package com.github.huymaster.server.core.net
 
 import com.github.huymaster.server.api.constants.Endpoints
-import com.github.huymaster.server.api.models.common.TokenCookie
 import com.github.huymaster.server.api.models.request.LoginRequest
 import com.github.huymaster.server.api.models.request.RegisterRequest
+import com.github.huymaster.server.core.module.APP_DOMAIN
 import com.github.huymaster.server.core.service.AuthService
+import com.github.huymaster.server.core.utils.JWTManager
 import com.github.huymaster.server.core.utils.LocaleContext.Companion.localeContext
+import com.github.huymaster.server.core.utils.getUserId
 import com.github.huymaster.server.core.utils.requestOrNull
+import com.github.huymaster.server.core.utils.requestOrThrow
 import com.github.huymaster.server.core.utils.serviceException
 import io.ktor.http.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -30,42 +34,34 @@ object AuthRoutes : BaseRoute() {
             call.respond(HttpStatusCode.Created, localeContext["register.success"])
         }
 
-        post(Endpoints.AUTH_SERVICE_LOGIN) {
-            val cookie = call.sessions.get<TokenCookie>()
-            if (cookie != null) {
-                val verifyResult = authService.verifyRefreshToken(cookie.token)
-                    .getOrElse { false }
-                if (!verifyResult) call.sessions.clear<TokenCookie>()
-                else serviceException(HttpStatusCode.Forbidden, "login.already_login")
+        authenticate(APP_DOMAIN, optional = true) {
+            post(Endpoints.AUTH_SERVICE_LOGIN) {
+                if (getUserId() != null)
+                    serviceException(HttpStatusCode.Forbidden, "login.already_login")
+
+                val request = call.requestOrNull<LoginRequest>()
+                    ?: serviceException(HttpStatusCode.BadRequest, "error.request_invalid")
+
+                val ipAddress = call.request.origin.remoteAddress
+                val token = authService.login(request.username, request.password, ipAddress).getOrThrow()
+                call.respond(HttpStatusCode.OK, token)
             }
-
-            val request = call.requestOrNull<LoginRequest>()
-                ?: serviceException(HttpStatusCode.BadRequest, "error.request_invalid")
-
-            val ipAddress = call.request.origin.remoteAddress
-            val token = authService.login(request.username, request.password, ipAddress).getOrThrow()
-            call.sessions.set(TokenCookie(token))
-            call.respond(HttpStatusCode.OK, localeContext["login.success"])
         }
 
         get(Endpoints.AUTH_SERVICE_REFRESH) {
-            val cookie = call.sessions.get<TokenCookie>()
-                ?: serviceException(HttpStatusCode.Unauthorized, "refresh.refresh_token_not_found")
-
+            val refreshToken = call.requestOrThrow<String>()
             val ipAddress = call.request.origin.remoteAddress
-            val pair = authService.refreshToken(cookie.token, ipAddress).getOrThrow()
-            call.sessions.set(TokenCookie(pair.first))
-            call.respond(HttpStatusCode.OK, pair.second)
+            val pair = authService.refreshToken(refreshToken, ipAddress).getOrThrow()
+            call.respond(HttpStatusCode.OK, pair)
         }
 
-        delete(Endpoints.AUTH_SERVICE_LOGOUT) {
-            val token = call.sessions.get<TokenCookie>()
-                ?: serviceException(HttpStatusCode.Unauthorized, "logout.failed")
-
-            authService.logout(token.token).getOrThrow()
-
-            call.sessions.clear<TokenCookie>()
-            call.respond(HttpStatusCode.OK, localeContext["logout.success"])
+        authenticate(APP_DOMAIN) {
+            delete(Endpoints.AUTH_SERVICE_LOGOUT) {
+                val accessToken = call.principal<JWTManager.Token.Access>()
+                    ?: serviceException(HttpStatusCode.Unauthorized, "error.unauthorized")
+                authService.logout(accessToken.createdBy).getOrThrow()
+                call.respond(HttpStatusCode.OK, localeContext["logout.success"])
+            }
         }
     }
 }

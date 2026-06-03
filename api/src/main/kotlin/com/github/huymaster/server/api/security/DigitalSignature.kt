@@ -10,7 +10,7 @@ package com.github.huymaster.server.api.security
  * @param M the type of the message to be signed or verified.
  * @param R the type of the generated signature output.
  */
-interface DigitalSignature<in P, in S, in M, R> {
+interface DigitalSignature<in P, in S, in M, R> : Security {
     /**
      * Signs the given message using the private key.
      *

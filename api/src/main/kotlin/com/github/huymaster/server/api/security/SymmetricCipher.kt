@@ -10,7 +10,7 @@ package com.github.huymaster.server.api.security
  * @param O the type of the encrypted ciphertext output and input.
  * @param K the type of the symmetric cryptographic key or parameter material required.
  */
-interface SymmetricCipher<I, O, in K> {
+interface SymmetricCipher<I, O, in K> : Security {
     /**
      * Encrypts the provided plaintext into a secure ciphertext format.
      *

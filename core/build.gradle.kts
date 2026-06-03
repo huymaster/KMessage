@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.serialization.kotlinx.cbor)
     implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.cors)
@@ -75,6 +74,8 @@ dependencies {
     implementation(libs.kotlinx.html)
     implementation(libs.kotlin.css)
 
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
 
@@ -92,7 +93,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 tasks.test {

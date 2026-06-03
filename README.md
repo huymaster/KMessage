@@ -1,1 +1,0 @@
-[![](https://jitpack.io/v/huymaster/ExpandableServer.svg)](https://jitpack.io/#huymaster/ExpandableServer)

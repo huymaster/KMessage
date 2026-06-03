@@ -29,4 +29,5 @@ rootProject.name = "Server"
 
 include(":api")
 include(":core")
-include(":android")
+if (file("android").exists())
+    include(":android")

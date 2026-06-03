@@ -19,6 +19,8 @@ logback = "1.5.32"
 bouncy-castle = "1.84"
 agp = "9.0.1"
 coreKtx = "1.18.0"
+material = "1.14.0"
+datastore = "1.2.1"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
@@ -59,7 +61,6 @@ ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging" }
 ktor-server-resources = { module = "io.ktor:ktor-server-resources" }
 ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation" }
-ktor-server-sessions = { module = "io.ktor:ktor-server-sessions" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors" }
@@ -71,14 +72,30 @@ ktor-server-http-redirect = { module = "io.ktor:ktor-server-http-redirect" }
 ktor-server-hsts = { module = "io.ktor:ktor-server-hsts" }
 ktor-server-forwarded-header = { module = "io.ktor:ktor-server-forwarded-header" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+
+ktor-client-core = { module = "io.ktor:ktor-client-core" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }
+
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 ktor-serialization-kotlinx-cbor = { module = "io.ktor:ktor-serialization-kotlinx-cbor" }
 
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinx-html" }
 kotlin-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-css-jvm", version.ref = "kotlinx-css" }
 
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
-koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-annotations = { module = "io.insert-koin:koin-annotations" }
+koin-ktor = { module = "io.insert-koin:koin-ktor" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
+koin-compose-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j" }
 
 ktorm-core = { module = "org.ktorm:ktorm-core", version.ref = "ktorm" }
 ktorm-psql = { module = "org.ktorm:ktorm-support-postgresql", version.ref = "ktorm" }
@@ -89,18 +106,23 @@ bouncy-castle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bou
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-window-size-clazz = { group = "androidx.compose.material3", name = "material3-window-size-class"}
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }

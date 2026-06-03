@@ -1,4 +1,4 @@
-package com.github.huymaster.kmessage.ui.theme
+package com.github.huymaster.kmessage.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -31,7 +31,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun KMessageTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

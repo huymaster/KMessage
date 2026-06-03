@@ -8,7 +8,7 @@ package com.github.huymaster.server.api.security
  * @param P the type of the password.
  * @param S the type of the derived secret key.
  */
-interface KeyDerivation<in P, out S> {
+interface KeyDerivation<in P, out S>  : Security{
     /**
      * Derives a cryptographic key from the given password and salt.
      *

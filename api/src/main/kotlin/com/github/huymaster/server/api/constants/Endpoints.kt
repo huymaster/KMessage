@@ -1,6 +1,24 @@
 package com.github.huymaster.server.api.constants
 
+import java.util.concurrent.ConcurrentHashMap
+
 object Endpoints {
+    private val instances = ConcurrentHashMap<String, EndpointProvider>()
+
+    interface EndpointProvider {
+        fun get(path: String): String
+    }
+
+    private class EndpointProviderImpl(
+        private val host: String,
+    ) : EndpointProvider {
+        override fun get(path: String): String {
+            val hostNorm = host.removeSuffix("/")
+            val pathNorm = path.removePrefix("/")
+            return "${hostNorm}/${pathNorm}"
+        }
+    }
+
     const val BASE_SERVICE_HEALTH = "health"
     const val BASE_SERVICE_INFO = "info"
 
@@ -34,6 +52,9 @@ object Endpoints {
             return if (path.isEmpty()) cleanBase else "$cleanBase/$path"
         }
     }
+
+    fun getProvider(host: String): EndpointProvider =
+        instances.getOrPut(host) { EndpointProviderImpl(host) }
 
     fun get(block: EndpointConfiguration.(Endpoints) -> Unit): String =
         EndpointConfiguration().apply { block(Endpoints) }.buildUrl()

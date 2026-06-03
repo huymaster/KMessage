@@ -1,4 +1,4 @@
-package com.github.huymaster.kmessage.ui.theme
+package com.github.huymaster.kmessage.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
